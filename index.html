@@ -300,8 +300,13 @@ fetch('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/wor
     return `rgba(0,0,255,${0.25 + intensity * 0.75})`;
   }
 
-  // NON-STUDY COUNTRIES
-  return 'rgba(220,220,220,0.15)';
+  // HIGH-INCOME COUNTRIES = GREY
+if (highIncome.includes(feat.properties.name)) {
+  return 'rgba(170,170,170,0.45)';
+}
+
+// OTHER COUNTRIES
+return 'rgba(220,220,220,0.12)';
 })
 
     .polygonSideColor(() => 'rgba(0,0,0,0.05)')
