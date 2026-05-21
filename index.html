@@ -65,6 +65,11 @@
     Both datasets
   </div>
 
+  <div class="legend-item">
+    <div class="legend-color" style="background:#d3d3d3;"></div>
+    High-income countries
+  </div>
+  
   <div style="margin-top:10px;">
     * Countries with both individual and WHS/SAGE data
   </div>
@@ -85,6 +90,59 @@ const world = Globe()
 world.controls().autoRotate = true;
 world.controls().autoRotateSpeed = 0.6;
 
+  const highIncome = [
+
+  "United States of America",
+  "Canada",
+  "Australia",
+  "New Zealand",
+  "Japan",
+  "South Korea",
+  "Singapore",
+  "Israel",
+
+  "United Kingdom",
+  "Ireland",
+  "France",
+  "Germany",
+  "Italy",
+  "Spain",
+  "Portugal",
+  "Netherlands",
+  "Belgium",
+  "Luxembourg",
+  "Switzerland",
+  "Austria",
+  "Norway",
+  "Sweden",
+  "Finland",
+  "Denmark",
+  "Iceland",
+
+  "Poland",
+  "Czech Republic",
+  "Slovakia",
+  "Slovenia",
+  "Estonia",
+  "Latvia",
+  "Lithuania",
+  "Greece",
+  "Croatia",
+  "Hungary",
+
+  "Saudi Arabia",
+  "United Arab Emirates",
+  "Qatar",
+  "Kuwait",
+  "Bahrain",
+  "Oman",
+
+  "Chile",
+  "Uruguay",
+
+  "Taiwan"
+];
+  
 fetch('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson')
 .then(res => res.json())
 .then(countries => {
