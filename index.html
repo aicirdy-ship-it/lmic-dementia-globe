@@ -76,7 +76,7 @@
 
 const world = Globe()
 (document.getElementById('globeViz'))
-.globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+.globeImageUrl('//unpkg.com/three-globe/example/img/soft-blue-marble.jpg')
 .backgroundColor('#ffffff');
 
 fetch('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson')
@@ -88,9 +88,9 @@ fetch('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/wor
   // =========================
 
   const individualStudies = {
-    China: 34,
-    India: 14,
-    Brazil: 10,
+    China: 31,
+    India: 11,
+    Brazil: 8,
     Iran: 4,
     Indonesia: 3,
     Thailand: 2,
@@ -155,9 +155,9 @@ fetch('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/wor
     Uruguay: 2,
 
     // overlap countries
-    China: 1,
-    India: 1,
-    Brazil: 1,
+    China: 3,
+    India: 3,
+    Brazil: 2,
     Ecuador: 1
   };
 
@@ -200,21 +200,45 @@ fetch('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/wor
 
     .polygonCapColor(feat => {
 
-      switch(feat.properties.category) {
+  const individual = feat.properties.individual;
+  const whs = feat.properties.whs;
 
-        case 'individual':
-          return 'rgba(255,0,0,0.85)';
+  // BOTH DATASETS = PURPLE
+  if (individual > 0 && whs > 0) {
 
-        case 'whs':
-          return 'rgba(0,0,255,0.75)';
+    const intensity = Math.min(
+      (individual + whs) / 35,
+      1
+    );
 
-        case 'both':
-          return 'rgba(128,0,128,0.9)';
+    return `rgba(128,0,128,${0.35 + intensity * 0.65})`;
+  }
 
-        default:
-          return 'rgba(200,200,200,0.25)';
-      }
-    })
+  // INDIVIDUAL STUDIES = RED GRADIENT
+  if (individual > 0) {
+
+    const intensity = Math.min(
+      individual / 34,
+      1
+    );
+
+    return `rgba(255,0,0,${0.25 + intensity * 0.75})`;
+  }
+
+  // WHS/SAGE = BLUE GRADIENT
+  if (whs > 0) {
+
+    const intensity = Math.min(
+      whs / 3,
+      1
+    );
+
+    return `rgba(0,0,255,${0.25 + intensity * 0.75})`;
+  }
+
+  // NON-STUDY COUNTRIES
+  return 'rgba(220,220,220,0.15)';
+})
 
     .polygonSideColor(() => 'rgba(0,0,0,0.05)')
     .polygonStrokeColor(() => '#222')
