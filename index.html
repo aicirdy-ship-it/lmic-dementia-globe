@@ -77,10 +77,10 @@
 const world = Globe()
 (document.getElementById('globeViz'))
 .globeImageUrl('//unpkg.com/three-globe/example/img/earth-day.jpg')
-.backgroundColor('#f5f5f0');
-  .showAtmosphere(true)
+.backgroundColor('#f5f5f0')
+.showAtmosphere(true)
 .atmosphereColor('#bcdcff')
-.atmosphereAltitude(0.18)
+.atmosphereAltitude(0.18);
 
 world.controls().autoRotate = true;
 world.controls().autoRotateSpeed = 0.5;
