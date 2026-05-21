@@ -76,8 +76,11 @@
 
 const world = Globe()
 (document.getElementById('globeViz'))
-.globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+.globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
 .backgroundColor('#ffffff');
+  .showAtmosphere(true)
+.atmosphereColor('#bcdcff')
+.atmosphereAltitude(0.18)
 
 fetch('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson')
 .then(res => res.json())
@@ -280,7 +283,9 @@ fetch('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/wor
       return name;
     });
 
-});
+}); 
+  world.controls().autoRotate = true;
+world.controls().autoRotateSpeed = 0.5;
 
 </script>
 </body>
