@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8" />
   <title>LMIC Dementia Studies Globe</title>
@@ -11,7 +12,7 @@
       margin: 0;
       overflow: hidden;
       font-family: Arial, sans-serif;
-      background: white;
+      background: #f5f5f0;
     }
 
     #globeViz {
@@ -23,10 +24,10 @@
       position: absolute;
       top: 20px;
       left: 20px;
-      background: rgba(255,255,255,0.95);
+      background: rgba(255, 255, 255, 0.95);
       padding: 14px 18px;
       border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
       line-height: 1.6;
       font-size: 14px;
       z-index: 10;
@@ -49,308 +50,386 @@
 
 <body>
 
-<div id="legend">
-  <div class="legend-item">
-    <div class="color-box" style="background:red;"></div>
-    Individual studies
+  <!-- LEGEND -->
+
+  <div id="legend">
+
+    <div class="legend-item">
+      <div class="color-box" style="background:red;"></div>
+      Individual studies
+    </div>
+
+    <div class="legend-item">
+      <div class="color-box" style="background:blue;"></div>
+      WHS / SAGE studies
+    </div>
+
+    <div class="legend-item">
+      <div class="color-box" style="background:purple;"></div>
+      Both datasets
+    </div>
+
+    <div class="legend-item">
+      <div class="color-box" style="background:grey;"></div>
+      High-income countries
+    </div>
+
+    <div style="margin-top:10px;">
+      * Countries with both individual and WHS/SAGE data
+    </div>
+
   </div>
 
-  <div class="legend-item">
-    <div class="color-box" style="background:blue;"></div>
-    WHS / SAGE studies
-  </div>
+  <div id="globeViz"></div>
 
-  <div class="legend-item">
-    <div class="color-box" style="background:purple;"></div>
-    Both datasets
-  </div>
+  <script>
 
-  <div class="legend-item">
-    <div class="color-box" style="background:grey;"></div>
-    High-income countries
-  </div>
-  
-  <div style="margin-top:10px;">
-    * Countries with both individual and WHS/SAGE data
-  </div>
-</div>
+    // =========================
+    // GLOBE SETUP
+    // =========================
 
-<div id="globeViz"></div>
+    const world = Globe()
+      (document.getElementById('globeViz'))
 
-<script>
+      .globeImageUrl('//unpkg.com/three-globe/example/img/earth-day.jpg')
 
-const world = Globe()
-(document.getElementById('globeViz'))
-.globeImageUrl('//unpkg.com/three-globe/example/img/earth-day.jpg')
-.backgroundColor('#f5f5f0')
-.showAtmosphere(true)
-.atmosphereColor('#bcdcff')
-.atmosphereAltitude(0.18);
+      .backgroundColor('#f5f5f0')
 
-world.controls().autoRotate = true;
-world.controls().autoRotateSpeed = 0.6;
+      .showAtmosphere(true)
+      .atmosphereColor('#bcdcff')
+      .atmosphereAltitude(0.18);
 
-  const highIncome = [
+    // AUTO ROTATION
 
-  "United States of America",
-  "Canada",
-  "Australia",
-  "New Zealand",
-  "Japan",
-  "South Korea",
-  "Singapore",
-  "Israel",
+    world.controls().autoRotate = true;
+    world.controls().autoRotateSpeed = 0.6;
 
-  "United Kingdom",
-  "Ireland",
-  "France",
-  "Germany",
-  "Italy",
-  "Spain",
-  "Portugal",
-  "Netherlands",
-  "Belgium",
-  "Luxembourg",
-  "Switzerland",
-  "Austria",
-  "Norway",
-  "Sweden",
-  "Finland",
-  "Denmark",
-  "Iceland",
+    // =========================
+    // HIGH-INCOME COUNTRIES
+    // =========================
 
-  "Poland",
-  "Czech Republic",
-  "Slovakia",
-  "Slovenia",
-  "Estonia",
-  "Latvia",
-  "Lithuania",
-  "Greece",
-  "Croatia",
-  "Hungary",
+    const highIncome = [
 
-  "Saudi Arabia",
-  "United Arab Emirates",
-  "Qatar",
-  "Kuwait",
-  "Bahrain",
-  "Oman",
+      "United States",
+      "Canada",
+      "Australia",
+      "New Zealand",
+      "Japan",
+      "Republic of Korea",
+      "Singapore",
+      "Israel",
 
-  "Chile",
-  "Uruguay",
+      "United Kingdom",
+      "Ireland",
+      "France",
+      "Germany",
+      "Italy",
+      "Spain",
+      "Portugal",
+      "Netherlands",
+      "Belgium",
+      "Luxembourg",
+      "Switzerland",
+      "Austria",
+      "Norway",
+      "Sweden",
+      "Finland",
+      "Denmark",
+      "Iceland",
 
-  "Taiwan"
-];
-  
-fetch('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson')
-.then(res => res.json())
-.then(countries => {
+      "Poland",
+      "Czechia",
+      "Slovakia",
+      "Slovenia",
+      "Estonia",
+      "Latvia",
+      "Lithuania",
+      "Greece",
+      "Croatia",
+      "Hungary",
 
-  // =========================
-  // INDIVIDUAL STUDIES (RED)
-  // =========================
+      "Saudi Arabia",
+      "United Arab Emirates",
+      "Qatar",
+      "Kuwait",
+      "Bahrain",
+      "Oman",
 
-  const individualStudies = {
-    China: 31,
-    India: 11,
-    Brazil: 8,
-    Iran: 4,
-    Indonesia: 3,
-    Thailand: 2,
-    Turkey: 2,
-    Argentina: 1,
-    Colombia: 1,
-    Ecuador: 1,
-    Mongolia: 1
-  };
+      "Chile",
+      "Uruguay",
 
-  // =========================
-  // WHS / SAGE STUDIES (BLUE)
-  // =========================
+      "Taiwan"
+    ];
 
-  const whsSageStudies = {
-    Ghana: 3,
-    Russia: 3,
-    "South Africa": 3,
+    // =========================
+    // FETCH GEOJSON
+    // =========================
 
-    Bangladesh: 2,
-    "Burkina Faso": 2,
-    Chad: 2,
-    Comoros: 2,
-    Ethiopia: 2,
-    "Ivory Coast": 2,
-    Kenya: 2,
-    Laos: 2,
-    Malawi: 2,
-    Myanmar: 2,
-    Nepal: 2,
-    Pakistan: 2,
-    Senegal: 2,
-    Vietnam: 2,
-    Zambia: 2,
-    Zimbabwe: 2,
+    fetch('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson')
 
-    Mauritania: 1,
-    "Democratic Republic of the Congo": 1,
-    Mali: 1,
+      .then(res => res.json())
 
-    "Bosnia and Herzegovina": 2,
-    Croatia: 2,
-    "Czech Republic": 2,
-    "Dominican Republic": 2,
-    Estonia: 2,
-    Georgia: 2,
-    Hungary: 2,
-    Kazakhstan: 2,
-    Latvia: 2,
-    Malaysia: 2,
-    Mauritius: 2,
-    Mexico: 1,
-    Morocco: 2,
-    Namibia: 2,
-    Paraguay: 2,
-    Philippines: 2,
-    Slovakia: 1,
-    "Sri Lanka": 2,
-    Eswatini: 1,
-    Tunisia: 1,
-    Ukraine: 2,
-    Uruguay: 2,
+      .then(countries => {
 
-    // overlap countries
-    China: 3,
-    India: 3,
-    Brazil: 2,
-    Ecuador: 1
-  };
+        // =========================
+        // INDIVIDUAL STUDIES
+        // =========================
 
-  // =========================
-  // COUNTRIES WITH BOTH
-  // =========================
+        const individualStudies = {
 
-  const overlapCountries = [
-    "China",
-    "India",
-    "Brazil",
-    "Ecuador"
-  ];
+          China: 31,
+          India: 11,
+          Brazil: 8,
+          Iran: 4,
+          Indonesia: 3,
+          Thailand: 2,
+          Turkey: 2,
+          Argentina: 1,
+          Colombia: 1,
+          Ecuador: 1,
+          Mongolia: 1
+        };
 
-  countries.features.forEach(f => {
+        // =========================
+        // WHS / SAGE STUDIES
+        // =========================
 
-    const name = f.properties.name;
+        const whsSageStudies = {
 
-    const individual = individualStudies[name] || 0;
-    const whs = whsSageStudies[name] || 0;
+          Ghana: 3,
+          Russia: 3,
+          "South Africa": 3,
 
-    f.properties.individual = individual;
-    f.properties.whs = whs;
+          Bangladesh: 2,
+          "Burkina Faso": 2,
+          Chad: 2,
+          Comoros: 2,
+          Ethiopia: 2,
+          "Ivory Coast": 2,
+          Kenya: 2,
+          Laos: 2,
+          Malawi: 2,
+          Myanmar: 2,
+          Nepal: 2,
+          Pakistan: 2,
+          Senegal: 2,
+          Vietnam: 2,
+          Zambia: 2,
+          Zimbabwe: 2,
 
-    // Determine category
-    if (individual > 0 && whs > 0) {
-      f.properties.category = 'both';
-    } else if (individual > 0) {
-      f.properties.category = 'individual';
-    } else if (whs > 0) {
-      f.properties.category = 'whs';
-    } else {
-      f.properties.category = 'none';
-    }
+          Mauritania: 1,
+          "Democratic Republic of the Congo": 1,
+          Mali: 1,
 
-  });
+          "Bosnia and Herzegovina": 2,
+          Croatia: 2,
+          "Czechia": 2,
+          "Dominican Republic": 2,
+          Estonia: 2,
+          Georgia: 2,
+          Hungary: 2,
+          Kazakhstan: 2,
+          Latvia: 2,
+          Malaysia: 2,
+          Mauritius: 2,
+          Mexico: 1,
+          Morocco: 2,
+          Namibia: 2,
+          Paraguay: 2,
+          Philippines: 2,
+          Slovakia: 1,
+          "Sri Lanka": 2,
+          Eswatini: 1,
+          Tunisia: 1,
+          Ukraine: 2,
+          Uruguay: 2,
 
-  world
-    .polygonsData(countries.features)
+          // overlap countries
 
-    .polygonCapColor(feat => {
+          China: 3,
+          India: 3,
+          Brazil: 2,
+          Ecuador: 1
+        };
 
-  const individual = feat.properties.individual;
-  const whs = feat.properties.whs;
+        // =========================
+        // OVERLAP COUNTRIES
+        // =========================
 
-  // BOTH DATASETS = PURPLE
-  if (individual > 0 && whs > 0) {
+        const overlapCountries = [
 
-    const intensity = Math.min(
-      (individual + whs) / 35,
-      1
-    );
+          "China",
+          "India",
+          "Brazil",
+          "Ecuador"
 
-    return `rgba(128,0,128,${0.35 + intensity * 0.65})`;
-  }
+        ];
 
-  // INDIVIDUAL STUDIES = RED GRADIENT
-  if (individual > 0) {
+        // =========================
+        // PROCESS COUNTRIES
+        // =========================
 
-    const intensity = Math.min(
-      individual / 34,
-      1
-    );
+        countries.features.forEach(f => {
 
-    return `rgba(255,0,0,${0.25 + intensity * 0.75})`;
-  }
+          const name = f.properties.name;
 
-  // WHS/SAGE = BLUE GRADIENT
-  if (whs > 0) {
+          const individual = individualStudies[name] || 0;
+          const whs = whsSageStudies[name] || 0;
 
-    const intensity = Math.min(
-      whs / 3,
-      1
-    );
+          f.properties.individual = individual;
+          f.properties.whs = whs;
 
-    return `rgba(0,0,255,${0.25 + intensity * 0.75})`;
-  }
+          f.properties.highIncome =
+            highIncome.includes(name);
 
-  // HIGH-INCOME COUNTRIES = GREY
-if (highIncome.includes(name)) {
-  return 'rgba(211,211,211,0.85)';
-}
+          // CATEGORY
 
-// OTHER COUNTRIES
-return 'rgba(220,220,220,0.12)';
-})
+          if (individual > 0 && whs > 0) {
 
-    .polygonSideColor(() => 'rgba(0,0,0,0.05)')
-    .polygonStrokeColor(() => '#222')
+            f.properties.category = 'both';
 
-    .polygonLabel(feat => {
+          } else if (individual > 0) {
 
-      const name = feat.properties.name;
+            f.properties.category = 'individual';
 
-      const hasAsterisk = overlapCountries.includes(name) ? '*' : '';
+          } else if (whs > 0) {
 
-      const individual = feat.properties.individual;
-      const whs = feat.properties.whs;
+            f.properties.category = 'whs';
 
-      if (feat.properties.category === 'individual') {
+          } else if (f.properties.highIncome) {
 
-        return `
-          <b>${name}</b><br>
-          Individual studies: ${individual}
-        `;
-      }
+            f.properties.category = 'highIncome';
 
-      if (feat.properties.category === 'whs') {
+          } else {
 
-        return `
-          <b>${name}</b><br>
-          WHS/SAGE studies: ${whs}
-        `;
-      }
+            f.properties.category = 'none';
+          }
 
-      if (feat.properties.category === 'both') {
+        });
 
-        return `
-          <b>${name}${hasAsterisk}</b><br>
-          Individual studies: ${individual}<br>
-          WHS/SAGE studies: ${whs}
-        `;
-      }
+        // =========================
+        // DRAW GLOBE
+        // =========================
 
-      return name;
-    });
+        world
 
-}); 
+          .polygonsData(countries.features)
 
-</script>
+          .polygonCapColor(feat => {
+
+            const individual = feat.properties.individual;
+            const whs = feat.properties.whs;
+
+            // BOTH = PURPLE
+
+            if (feat.properties.category === 'both') {
+
+              const intensity = Math.min(
+                (individual + whs) / 35,
+                1
+              );
+
+              return `rgba(140,70,180,${0.35 + intensity * 0.65})`;
+            }
+
+            // INDIVIDUAL = RED
+
+            if (feat.properties.category === 'individual') {
+
+              const intensity = Math.min(
+                individual / 34,
+                1
+              );
+
+              return `rgba(220,40,40,${0.25 + intensity * 0.75})`;
+            }
+
+            // WHS/SAGE = BLUE
+
+            if (feat.properties.category === 'whs') {
+
+              const intensity = Math.min(
+                whs / 3,
+                1
+              );
+
+              return `rgba(50,90,255,${0.25 + intensity * 0.75})`;
+            }
+
+            // HIGH-INCOME = GREY
+
+            if (feat.properties.category === 'highIncome') {
+
+              return 'rgba(160,160,160,0.55)';
+            }
+
+            // OTHER COUNTRIES
+
+            return 'rgba(220,220,220,0.10)';
+          })
+
+          .polygonSideColor(() => 'rgba(0,0,0,0.03)')
+
+          .polygonStrokeColor(() => 'rgba(255,255,255,0.18)')
+
+          .polygonLabel(feat => {
+
+            const name = feat.properties.name;
+
+            const hasAsterisk =
+              overlapCountries.includes(name) ? '*' : '';
+
+            const individual = feat.properties.individual;
+            const whs = feat.properties.whs;
+
+            // INDIVIDUAL
+
+            if (feat.properties.category === 'individual') {
+
+              return `
+                <b>${name}</b><br>
+                Individual studies: ${individual}
+              `;
+            }
+
+            // WHS/SAGE
+
+            if (feat.properties.category === 'whs') {
+
+              return `
+                <b>${name}</b><br>
+                WHS/SAGE studies: ${whs}
+              `;
+            }
+
+            // BOTH
+
+            if (feat.properties.category === 'both') {
+
+              return `
+                <b>${name}${hasAsterisk}</b><br>
+                Individual studies: ${individual}<br>
+                WHS/SAGE studies: ${whs}
+              `;
+            }
+
+            // HIGH-INCOME
+
+            if (feat.properties.category === 'highIncome') {
+
+              return `
+                <b>${name}</b><br>
+                High-income country
+              `;
+            }
+
+            return name;
+          });
+
+      });
+
+  </script>
+
 </body>
+
 </html>
